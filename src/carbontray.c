@@ -48,9 +48,32 @@ int main(int argc, char **argv) {
   GdkScreen *screen;
   CarbonTray *tray;
 
-  gtk_init(&argc, &argv);
-
   Config *config = config_default_new();
+
+  GOptionEntry entries[] = {
+      {"width", 'w', 0, G_OPTION_ARG_INT, &config->bar_width, "Bar width", "w"},
+      {"height", 'h', 0, G_OPTION_ARG_INT, &config->bar_height, "Bar height",
+       "h"},
+      {"icon-size", 'i', 0, G_OPTION_ARG_INT, &config->bar_icon_size,
+       "Bar icon size", "i"},
+      {"icon-spacing", 's', 0, G_OPTION_ARG_INT, &config->bar_icon_spacing,
+       "Bar icon spacing", "s"},
+      {NULL}};
+
+  GError *error = NULL;
+  GOptionContext *context;
+
+  context = g_option_context_new("- system tray");
+
+  g_option_context_add_main_entries(context, entries, NULL);
+  g_option_context_add_group(context, gtk_get_option_group(TRUE));
+
+  if (!g_option_context_parse(context, &argc, &argv, &error)) {
+    g_print("Option parsing failed: %s\n", error->message);
+    exit(1);
+  }
+
+  g_free(context);
 
   win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
