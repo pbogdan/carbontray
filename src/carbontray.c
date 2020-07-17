@@ -1,5 +1,3 @@
-#include <X11/X.h>
-#include <X11/Xlib.h>
 #include <carbontray/tray.h>
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -44,27 +42,23 @@ void load_user_stylesheet(GdkScreen *screen) {
 }
 
 void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
-  Display *xdpy = GDK_SCREEN_XDISPLAY(gtk_widget_get_screen(win));
-  Window xwin = GDK_WINDOW_XID(gtk_widget_get_window(win));
+  GdkWindow *gdk_window = gtk_widget_get_window(win);
 
-  Atom a_wm_strut = XInternAtom(xdpy, "_NET_WM_STRUT", false);
-  Atom a_wm_strut_partial = XInternAtom(xdpy, "_NET_WM_STRUT_PARTIAL", false);
-  Atom a_cardinal = XInternAtom(xdpy, "CARDINAL", false);
-
-  g_message("X11 window id: 0x%" PRIx64 "", xwin);
+  g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
   long struts[] = {0, 0, config->bar_height * scale_factor, 0};
   long struts_partial[] = {
       0, 0, config->bar_height * scale_factor,       0,        0, 0,
       0, 0, 3840 - config->bar_width * scale_factor, 3840 - 1, 0, 0};
 
-  XChangeProperty(xdpy, xwin, a_wm_strut, a_cardinal, 32, PropModeReplace,
-                  (unsigned char *)&struts, 4);
-  XChangeProperty(xdpy, xwin, a_wm_strut_partial, a_cardinal, 32,
-                  PropModeReplace, (unsigned char *)&struts_partial, 12);
+  gdk_property_change(gdk_window, gdk_atom_intern("_NET_WM_STRUT", false),
+                      gdk_atom_intern("CARDINAL", false), 32,
+                      GDK_PROP_MODE_REPLACE, (const guchar *)&struts, 4);
 
-  g_message("X display size: %dx%d", XDisplayWidth(xdpy, 0),
-            XDisplayHeight(xdpy, 0));
+  gdk_property_change(
+      gdk_window, gdk_atom_intern("_NET_WM_STRUT_PARTIAL", false),
+      gdk_atom_intern("CARDINAL", false), 32, GDK_PROP_MODE_REPLACE,
+      (const guchar *)&struts_partial, 12);
 }
 
 int main(int argc, char **argv) {
