@@ -23,8 +23,25 @@ Config *config_default_new() {
   return config;
 }
 
+void load_user_stylesheet(GdkScreen *screen) {
+  gchar *stylesheet_path = g_build_filename(g_get_user_config_dir(),
+                                            "carbontray", "style.css", NULL);
 
-void load_user_stylesheet(GdkScreen *screen);
+  GError *err = NULL;
+  GtkCssProvider *css_provider = gtk_css_provider_new();
+
+  gtk_css_provider_load_from_path(css_provider, stylesheet_path, &err);
+  if (err != NULL) {
+    g_message("Loading CSS from %s failed: %s", stylesheet_path, err->message);
+    g_error_free(err);
+  } else {
+    gtk_style_context_add_provider_for_screen(
+        screen, (GtkStyleProvider *)css_provider,
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  }
+
+  g_free(stylesheet_path);
+}
 
 int main(int argc, char **argv) {
   GtkWidget *win;
@@ -110,26 +127,7 @@ int main(int argc, char **argv) {
   g_message("X display size: %dx%d", XDisplayWidth(xdpy, 0),
             XDisplayHeight(xdpy, 0));
 
-  gtk_main();
-}
-
-void load_user_stylesheet(GdkScreen *screen) {
-  gchar *stylesheet_path = g_build_filename(g_get_user_config_dir(),
-                                            "carbontray", "style.css", NULL);
   g_free(config);
 
-  GError *err = NULL;
-  GtkCssProvider *css_provider = gtk_css_provider_new();
-
-  gtk_css_provider_load_from_path(css_provider, stylesheet_path, &err);
-  if (err != NULL) {
-    g_message("Loading CSS from %s failed: %s", stylesheet_path, err->message);
-    g_error_free(err);
-  } else {
-    gtk_style_context_add_provider_for_screen(
-        screen, (GtkStyleProvider *)css_provider,
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  }
-
-  g_free(stylesheet_path);
+  gtk_main();
 }
