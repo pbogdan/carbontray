@@ -43,6 +43,30 @@ void load_user_stylesheet(GdkScreen *screen) {
   g_free(stylesheet_path);
 }
 
+void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
+  Display *xdpy = GDK_SCREEN_XDISPLAY(gtk_widget_get_screen(win));
+  Window xwin = GDK_WINDOW_XID(gtk_widget_get_window(win));
+
+  Atom a_wm_strut = XInternAtom(xdpy, "_NET_WM_STRUT", false);
+  Atom a_wm_strut_partial = XInternAtom(xdpy, "_NET_WM_STRUT_PARTIAL", false);
+  Atom a_cardinal = XInternAtom(xdpy, "CARDINAL", false);
+
+  g_message("X11 window id: 0x%" PRIx64 "", xwin);
+
+  long struts[] = {0, 0, config->bar_height * scale_factor, 0};
+  long struts_partial[] = {
+      0, 0, config->bar_height * scale_factor,       0,        0, 0,
+      0, 0, 3840 - config->bar_width * scale_factor, 3840 - 1, 0, 0};
+
+  XChangeProperty(xdpy, xwin, a_wm_strut, a_cardinal, 32, PropModeReplace,
+                  (unsigned char *)&struts, 4);
+  XChangeProperty(xdpy, xwin, a_wm_strut_partial, a_cardinal, 32,
+                  PropModeReplace, (unsigned char *)&struts_partial, 12);
+
+  g_message("X display size: %dx%d", XDisplayWidth(xdpy, 0),
+            XDisplayHeight(xdpy, 0));
+}
+
 int main(int argc, char **argv) {
   GtkWidget *win;
   GdkScreen *screen;
@@ -130,26 +154,7 @@ int main(int argc, char **argv) {
 
   gtk_window_move(GTK_WINDOW(win), screen_width - config->bar_width, 0);
 
-  Display *xdpy = GDK_SCREEN_XDISPLAY(screen);
-  Window xwin = GDK_WINDOW_XID(gtk_widget_get_window(GTK_WIDGET(win)));
-  Atom a_wm_strut = XInternAtom(xdpy, "_NET_WM_STRUT", false);
-  Atom a_wm_strut_partial = XInternAtom(xdpy, "_NET_WM_STRUT_PARTIAL", false);
-  Atom a_cardinal = XInternAtom(xdpy, "CARDINAL", false);
-
-  g_message("X11 window id: 0x%" PRIx64 "", xwin);
-
-  long struts[] = {0, 0, config->bar_height * scale_factor, 0};
-  long struts_partial[] = {
-      0, 0, config->bar_height * scale_factor,       0,        0, 0,
-      0, 0, 3840 - config->bar_width * scale_factor, 3840 - 1, 0, 0};
-
-  XChangeProperty(xdpy, xwin, a_wm_strut, a_cardinal, 32, PropModeReplace,
-                  (unsigned char *)&struts, 4);
-  XChangeProperty(xdpy, xwin, a_wm_strut_partial, a_cardinal, 32,
-                  PropModeReplace, (unsigned char *)&struts_partial, 12);
-
-  g_message("X display size: %dx%d", XDisplayWidth(xdpy, 0),
-            XDisplayHeight(xdpy, 0));
+  setup_struts(win, config, scale_factor);
 
   g_free(config);
 
