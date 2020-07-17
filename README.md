@@ -1,6 +1,7 @@
 # carbontray
 
-A very simple, standalone Linux system tray based on https://github.com/pbogdan/libcarbontray.
+A very simple, standalone Linux system tray based on Budgie Desktop tray implementation. Please see
+https://github.com/pbogdan/libcarbontray for more details.
 
 Presently it is unlikely it would satisfy needs any other than those of the author.
 
