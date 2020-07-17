@@ -23,7 +23,6 @@ Config *config_default_new() {
   return config;
 }
 
-static int screen_width = 1920;
 
 void load_user_stylesheet(GdkScreen *screen);
 
@@ -42,6 +41,13 @@ int main(int argc, char **argv) {
   gtk_widget_set_name(GTK_WIDGET(win), "carbontray");
 
   screen = gtk_widget_get_screen(win);
+
+  GdkRectangle *geometry = g_malloc(sizeof(GdkRectangle));
+  gdk_monitor_get_geometry(
+      gdk_display_get_primary_monitor(gdk_screen_get_display(screen)),
+      geometry);
+  int screen_width = geometry->width;
+  g_free(geometry);
 
   load_user_stylesheet(screen);
 
