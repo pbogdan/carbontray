@@ -12,11 +12,7 @@ static int bar_spacing = 4;
 
 static int screen_width = 1920;
 
-static char *bar_style = " \
-#carbontray { \
-  background-color: rgba(0x38, 0x3a, 0x42, 0.59); \
-} \
-";
+void load_user_stylesheet(GdkScreen *screen);
 
 int main(int argc, char **argv) {
   GtkWidget *win;
@@ -31,17 +27,7 @@ int main(int argc, char **argv) {
 
   screen = gtk_widget_get_screen(win);
 
-  GtkCssProvider *css_provider = gtk_css_provider_new();
-  gboolean ret =
-      gtk_css_provider_load_from_data(css_provider, bar_style, -1, NULL);
-
-  if (!ret) {
-    g_message("Failed to parse css!");
-  } else {
-    gtk_style_context_add_provider_for_screen(
-        screen, (GtkStyleProvider *)css_provider,
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  }
+  load_user_stylesheet(screen);
 
   GdkVisual *visual = gdk_screen_get_rgba_visual(screen);
   gtk_widget_set_visual(GTK_WIDGET(win), visual);
@@ -101,4 +87,24 @@ int main(int argc, char **argv) {
             XDisplayHeight(xdpy, 0));
 
   gtk_main();
+}
+
+void load_user_stylesheet(GdkScreen *screen) {
+  gchar *stylesheet_path = g_build_filename(g_get_user_config_dir(),
+                                            "carbontray", "style.css", NULL);
+
+  GError *err = NULL;
+  GtkCssProvider *css_provider = gtk_css_provider_new();
+
+  gtk_css_provider_load_from_path(css_provider, stylesheet_path, &err);
+  if (err != NULL) {
+    g_message("Loading CSS from %s failed: %s", stylesheet_path, err->message);
+    g_error_free(err);
+  } else {
+    gtk_style_context_add_provider_for_screen(
+        screen, (GtkStyleProvider *)css_provider,
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  }
+
+  g_free(stylesheet_path);
 }
