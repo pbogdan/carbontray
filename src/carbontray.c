@@ -49,6 +49,10 @@ int main(int argc, char **argv) {
   int screen_width = geometry->width;
   g_free(geometry);
 
+  int scale_factor = gdk_monitor_get_scale_factor(
+      gdk_display_get_primary_monitor(gdk_screen_get_display(screen)));
+  g_message("GTK scale factor: %d", scale_factor);
+
   load_user_stylesheet(screen);
 
   GdkVisual *visual = gdk_screen_get_rgba_visual(screen);
@@ -102,9 +106,6 @@ int main(int argc, char **argv) {
                   (unsigned char *)&struts, 4);
   XChangeProperty(xdpy, xwin, a_wm_strut_partial, a_cardinal, 32,
                   PropModeReplace, (unsigned char *)&struts_partial, 12);
-
-  g_message("GTK scale factor: %d",
-            gtk_widget_get_scale_factor(GTK_WIDGET(win)));
 
   g_message("X display size: %dx%d", XDisplayWidth(xdpy, 0),
             XDisplayHeight(xdpy, 0));
