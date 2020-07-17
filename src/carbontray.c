@@ -115,9 +115,10 @@ int main(int argc, char **argv) {
 
   g_message("X11 window id: 0x%" PRIx64 "", xwin);
 
-  long struts[] = {0, 0, config->bar_height * 2, 0};
-  long struts_partial[] = {0, 0, config->bar_height * 2,       0,        0, 0,
-                           0, 0, 3840 - config->bar_width * 2, 3840 - 1, 0, 0};
+  long struts[] = {0, 0, config->bar_height * scale_factor, 0};
+  long struts_partial[] = {
+      0, 0, config->bar_height * scale_factor,       0,        0, 0,
+      0, 0, 3840 - config->bar_width * scale_factor, 3840 - 1, 0, 0};
 
   XChangeProperty(xdpy, xwin, a_wm_strut, a_cardinal, 32, PropModeReplace,
                   (unsigned char *)&struts, 4);
