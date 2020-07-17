@@ -5,10 +5,23 @@
 #include <gtk/gtk.h>
 #include <inttypes.h>
 
-static int bar_height = 25;
-static int bar_width = 100;
-static int bar_icon_size = 16;
-static int bar_spacing = 4;
+typedef struct {
+  int bar_width;
+  int bar_height;
+  int bar_icon_size;
+  int bar_icon_spacing;
+} Config;
+
+Config *config_default_new() {
+  Config *config = g_malloc(sizeof(Config));
+
+  config->bar_width = 100;
+  config->bar_height = 25;
+  config->bar_icon_size = 16;
+  config->bar_icon_spacing = 4;
+
+  return config;
+}
 
 static int screen_width = 1920;
 
@@ -20,6 +33,9 @@ int main(int argc, char **argv) {
   CarbonTray *tray;
 
   gtk_init(&argc, &argv);
+
+  Config *config = config_default_new();
+
   win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   gtk_window_set_title(GTK_WINDOW(win), "carbontray");
@@ -34,8 +50,8 @@ int main(int argc, char **argv) {
 
   g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-  tray =
-      carbon_tray_new(GTK_ORIENTATION_HORIZONTAL, bar_icon_size, bar_spacing);
+  tray = carbon_tray_new(GTK_ORIENTATION_HORIZONTAL, config->bar_icon_size,
+                         config->bar_icon_spacing);
 
   if (tray == NULL) {
     g_message("Failed to initialise the tray!");
@@ -58,10 +74,11 @@ int main(int argc, char **argv) {
   gtk_window_set_keep_below(GTK_WINDOW(win), TRUE);
   gtk_window_stick(GTK_WINDOW(win));
 
-  gtk_window_resize(GTK_WINDOW(win), bar_width, bar_height);
-  gtk_widget_set_size_request(GTK_WIDGET(win), bar_width, bar_height);
+  gtk_window_resize(GTK_WINDOW(win), config->bar_width, config->bar_height);
+  gtk_widget_set_size_request(GTK_WIDGET(win), config->bar_width,
+                              config->bar_height);
 
-  gtk_window_move(GTK_WINDOW(win), screen_width - bar_width, 0);
+  gtk_window_move(GTK_WINDOW(win), screen_width - config->bar_width, 0);
 
   Display *xdpy = GDK_SCREEN_XDISPLAY(screen);
   Window xwin = GDK_WINDOW_XID(gtk_widget_get_window(GTK_WIDGET(win)));
@@ -71,9 +88,9 @@ int main(int argc, char **argv) {
 
   g_message("X11 window id: 0x%" PRIx64 "", xwin);
 
-  long struts[] = {0, 0, bar_height * 2, 0};
-  long struts_partial[] = {0, 0, bar_height * 2,       0,        0, 0,
-                           0, 0, 3840 - bar_width * 2, 3840 - 1, 0, 0};
+  long struts[] = {0, 0, config->bar_height * 2, 0};
+  long struts_partial[] = {0, 0, config->bar_height * 2,       0,        0, 0,
+                           0, 0, 3840 - config->bar_width * 2, 3840 - 1, 0, 0};
 
   XChangeProperty(xdpy, xwin, a_wm_strut, a_cardinal, 32, PropModeReplace,
                   (unsigned char *)&struts, 4);
@@ -92,6 +109,7 @@ int main(int argc, char **argv) {
 void load_user_stylesheet(GdkScreen *screen) {
   gchar *stylesheet_path = g_build_filename(g_get_user_config_dir(),
                                             "carbontray", "style.css", NULL);
+  g_free(config);
 
   GError *err = NULL;
   GtkCssProvider *css_provider = gtk_css_provider_new();
