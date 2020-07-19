@@ -3,12 +3,14 @@
 #include <gtk/gtk.h>
 #include <inttypes.h>
 
+enum Position { TopLeft = 1, TopRight = 2, BottomLeft = 3, BottomRight = 4 };
+
 typedef struct {
   int bar_width;
   int bar_height;
   int bar_icon_size;
   int bar_icon_spacing;
-  char *bar_position;
+  enum Position bar_position;
 } Config;
 
 typedef struct {
@@ -30,15 +32,12 @@ Config *config_default_new() {
   config->bar_height = 25;
   config->bar_icon_size = 16;
   config->bar_icon_spacing = 4;
-  config->bar_position = "top-right";
+  config->bar_position = TopRight;
 
   return config;
 }
 
-void config_destroy(Config *config) {
-  g_free(config->bar_position);
-  g_free(config);
-}
+void config_destroy(Config *config) { g_free(config); }
 
 GdkPoint *get_coordinates(GtkWidget *win, Config *config) {
   GdkPoint *point = g_malloc(sizeof(GdkPoint));
@@ -53,23 +52,20 @@ GdkPoint *get_coordinates(GtkWidget *win, Config *config) {
   point->x = geometry->width - config->bar_width;
   point->y = 0;
 
-  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
-      g_strcmp0(config->bar_position, "top-right")) {
+  if (config->bar_position == TopLeft || config->bar_position == TopRight) {
     point->y = 0;
   }
 
-  if (g_strcmp0(config->bar_position, "bottom-left") == 0 ||
-      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+  if (config->bar_position == BottomLeft ||
+      config->bar_position == BottomRight) {
     point->y = geometry->height - config->bar_height;
   }
 
-  if (g_strcmp0(config->bar_position, "top-right") == 0 ||
-      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+  if (config->bar_position == TopRight || config->bar_position == BottomRight) {
     point->x = geometry->width - config->bar_width;
   }
 
-  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
-      g_strcmp0(config->bar_position, "bottom-left") == 0) {
+  if (config->bar_position == TopLeft || config->bar_position == BottomLeft) {
     point->x = 0;
   }
 
@@ -105,27 +101,24 @@ void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
 
   g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
-  if (g_strcmp0(config->bar_position, "top-right") == 0 ||
-      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+  if (config->bar_position == TopRight || config->bar_position == BottomRight) {
     strut_start = 3840 - config->bar_width * scale_factor;
   }
 
-  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
-      g_strcmp0(config->bar_position, "bottom-left") == 0) {
+  if (config->bar_position == TopLeft || config->bar_position == BottomLeft) {
     strut_start = 0;
   }
 
   strut_end = strut_start + config->bar_width * scale_factor - 1;
 
-  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
-      g_strcmp0(config->bar_position, "top-right") == 0) {
+  if (config->bar_position == TopLeft || config->bar_position == TopRight) {
     struts->top = config->bar_height * scale_factor;
     struts->top_start_x = strut_start;
     struts->top_end_x = strut_end;
   }
 
-  if (g_strcmp0(config->bar_position, "bottom-left") == 0 ||
-      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+  if (config->bar_position == BottomLeft ||
+      config->bar_position == BottomRight) {
     struts->bottom = config->bar_height * scale_factor;
     struts->bottom_start_x = strut_start;
     struts->bottom_end_x = strut_end;
@@ -149,6 +142,8 @@ int main(int argc, char **argv) {
 
   Config *config = config_default_new();
 
+  char *position = NULL;
+
   GOptionEntry entries[] = {
       {"width", 'w', 0, G_OPTION_ARG_INT, &config->bar_width, "Bar width", "w"},
       {"height", 'h', 0, G_OPTION_ARG_INT, &config->bar_height, "Bar height",
@@ -157,7 +152,7 @@ int main(int argc, char **argv) {
        "Bar icon size", "i"},
       {"icon-spacing", 's', 0, G_OPTION_ARG_INT, &config->bar_icon_spacing,
        "Bar icon spacing", "s"},
-      {"position", 'p', 0, G_OPTION_ARG_STRING, &config->bar_position,
+      {"position", 'p', 0, G_OPTION_ARG_STRING, &position,
        "Bar position"
        "p"},
       {NULL}};
@@ -176,6 +171,24 @@ int main(int argc, char **argv) {
   }
 
   g_free(context);
+
+  config->bar_position = TopRight;
+
+  if (g_strcmp0(position, "top-left") == 0) {
+    config->bar_position = TopLeft;
+  }
+
+  if (g_strcmp0(position, "top-right") == 0) {
+    config->bar_position = TopRight;
+  }
+
+  if (g_strcmp0(position, "bottom-left") == 0) {
+    config->bar_position = BottomLeft;
+  }
+
+  if (g_strcmp0(position, "bottom-right") == 0) {
+    config->bar_position = BottomRight;
+  }
 
   win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
