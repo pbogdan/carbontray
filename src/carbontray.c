@@ -10,6 +10,9 @@ typedef struct {
   int bar_height;
   int bar_icon_size;
   int bar_icon_spacing;
+  int scale_factor;
+  int screen_width;
+  int screen_height;
   enum Position bar_position;
 } Config;
 
@@ -42,14 +45,8 @@ void config_destroy(Config *config) { g_free(config); }
 GdkPoint *get_coordinates(GtkWidget *win, Config *config) {
   GdkPoint *point = g_malloc(sizeof(GdkPoint));
 
-  GdkRectangle *geometry = g_malloc(sizeof(GdkRectangle));
-  gdk_monitor_get_geometry(
-      gdk_display_get_primary_monitor(
-          gdk_screen_get_display(gtk_window_get_screen((GTK_WINDOW(win))))),
-      geometry);
-
   // initialise with top-right by default
-  point->x = geometry->width - config->bar_width;
+  point->x = config->screen_width - config->bar_width;
   point->y = 0;
 
   if (config->bar_position == TopLeft || config->bar_position == TopRight) {
@@ -58,18 +55,16 @@ GdkPoint *get_coordinates(GtkWidget *win, Config *config) {
 
   if (config->bar_position == BottomLeft ||
       config->bar_position == BottomRight) {
-    point->y = geometry->height - config->bar_height;
+    point->y = config->screen_height - config->bar_height;
   }
 
   if (config->bar_position == TopRight || config->bar_position == BottomRight) {
-    point->x = geometry->width - config->bar_width;
+    point->x = config->screen_width - config->bar_width;
   }
 
   if (config->bar_position == TopLeft || config->bar_position == BottomLeft) {
     point->x = 0;
   }
-
-  g_free(geometry);
 
   return point;
 }
@@ -94,7 +89,7 @@ void load_user_stylesheet(GdkScreen *screen) {
   g_free(stylesheet_path);
 }
 
-void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
+void setup_struts(GtkWidget *win, Config *config) {
   GdkWindow *gdk_window = gtk_widget_get_window(win);
   Struts *struts = struts_new();
   long strut_start = 0, strut_end = 0;
@@ -102,24 +97,24 @@ void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
   g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
   if (config->bar_position == TopRight || config->bar_position == BottomRight) {
-    strut_start = 3840 - config->bar_width * scale_factor;
+    strut_start = 3840 - config->bar_width * config->scale_factor;
   }
 
   if (config->bar_position == TopLeft || config->bar_position == BottomLeft) {
     strut_start = 0;
   }
 
-  strut_end = strut_start + config->bar_width * scale_factor - 1;
+  strut_end = strut_start + config->bar_width * config->scale_factor - 1;
 
   if (config->bar_position == TopLeft || config->bar_position == TopRight) {
-    struts->top = config->bar_height * scale_factor;
+    struts->top = config->bar_height * config->scale_factor;
     struts->top_start_x = strut_start;
     struts->top_end_x = strut_end;
   }
 
   if (config->bar_position == BottomLeft ||
       config->bar_position == BottomRight) {
-    struts->bottom = config->bar_height * scale_factor;
+    struts->bottom = config->bar_height * config->scale_factor;
     struts->bottom_start_x = strut_start;
     struts->bottom_end_x = strut_end;
   }
@@ -197,9 +192,18 @@ int main(int argc, char **argv) {
 
   screen = gtk_widget_get_screen(win);
 
-  int scale_factor = gdk_monitor_get_scale_factor(
+  config->scale_factor = gdk_monitor_get_scale_factor(
       gdk_display_get_primary_monitor(gdk_screen_get_display(screen)));
-  g_message("GTK scale factor: %d", scale_factor);
+  g_message("GTK scale factor: %d", config->scale_factor);
+
+  GdkRectangle *geometry = g_malloc(sizeof(GdkRectangle));
+  gdk_monitor_get_geometry(
+      gdk_display_get_primary_monitor(
+          gdk_screen_get_display(gtk_window_get_screen((GTK_WINDOW(win))))),
+      geometry);
+  config->screen_width = geometry->width;
+  config->screen_height = geometry->height;
+  g_free(geometry);
 
   load_user_stylesheet(screen);
 
@@ -242,7 +246,7 @@ int main(int argc, char **argv) {
 
   g_free(coordinates);
 
-  setup_struts(win, config, scale_factor);
+  setup_struts(win, config);
 
   config_destroy(config);
 
