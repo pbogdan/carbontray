@@ -100,14 +100,36 @@ void load_user_stylesheet(GdkScreen *screen) {
 
 void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
   GdkWindow *gdk_window = gtk_widget_get_window(win);
+  Struts *struts = struts_new();
+  long strut_start = 0, strut_end = 0;
 
   g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
-  Struts *struts = struts_new();
+  if (g_strcmp0(config->bar_position, "top-right") == 0 ||
+      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+    strut_start = 3840 - config->bar_width * scale_factor;
+  }
 
-  struts->top = config->bar_height * scale_factor;
-  struts->top_start_x = 3840 - config->bar_width * scale_factor;
-  struts->top_end_x = 3840 - 1;
+  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
+      g_strcmp0(config->bar_position, "bottom-left") == 0) {
+    strut_start = 0;
+  }
+
+  strut_end = strut_start + config->bar_width * scale_factor - 1;
+
+  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
+      g_strcmp0(config->bar_position, "top-right") == 0) {
+    struts->top = config->bar_height * scale_factor;
+    struts->top_start_x = strut_start;
+    struts->top_end_x = strut_end;
+  }
+
+  if (g_strcmp0(config->bar_position, "bottom-left") == 0 ||
+      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+    struts->bottom = config->bar_height * scale_factor;
+    struts->bottom_start_x = strut_start;
+    struts->bottom_end_x = strut_end;
+  }
 
   gdk_property_change(gdk_window, gdk_atom_intern("_NET_WM_STRUT", false),
                       gdk_atom_intern("CARDINAL", false), 32,
