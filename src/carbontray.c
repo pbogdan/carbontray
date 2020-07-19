@@ -48,18 +48,29 @@ GdkPoint *get_coordinates(GtkWidget *win, Config *config) {
       gdk_display_get_primary_monitor(
           gdk_screen_get_display(gtk_window_get_screen((GTK_WINDOW(win))))),
       geometry);
-  if (g_strcmp0(config->bar_position, "top-left") == 0) {
-    point->x = 0;
+
+  // initialise with top-right by default
+  point->x = geometry->width - config->bar_width;
+  point->y = 0;
+
+  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
+      g_strcmp0(config->bar_position, "top-right")) {
     point->y = 0;
-  } else if (g_strcmp0(config->bar_position, "bottom-left") == 0) {
+  }
+
+  if (g_strcmp0(config->bar_position, "bottom-left") == 0 ||
+      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+    point->y = geometry->height - config->bar_height;
+  }
+
+  if (g_strcmp0(config->bar_position, "top-right") == 0 ||
+      g_strcmp0(config->bar_position, "bottom-right") == 0) {
+    point->x = geometry->width - config->bar_width;
+  }
+
+  if (g_strcmp0(config->bar_position, "top-left") == 0 ||
+      g_strcmp0(config->bar_position, "bottom-left") == 0) {
     point->x = 0;
-    point->y = geometry->height - config->bar_height;
-  } else if (g_strcmp0(config->bar_position, "bottom-right") == 0) {
-    point->x = geometry->width - config->bar_width;
-    point->y = geometry->height - config->bar_height;
-  } else { // fall back to default "top-right"
-    point->x = geometry->width - config->bar_width;
-    point->y = 0;
   }
 
   g_free(geometry);
