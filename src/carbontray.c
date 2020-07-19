@@ -46,8 +46,7 @@ void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
 
   g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
-  long struts[] = {0, 0, config->bar_height * scale_factor, 0};
-  long struts_partial[] = {
+  long struts[] = {
       0, 0, config->bar_height * scale_factor,       0,        0, 0,
       0, 0, 3840 - config->bar_width * scale_factor, 3840 - 1, 0, 0};
 
@@ -55,10 +54,10 @@ void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
                       gdk_atom_intern("CARDINAL", false), 32,
                       GDK_PROP_MODE_REPLACE, (const guchar *)&struts, 4);
 
-  gdk_property_change(
-      gdk_window, gdk_atom_intern("_NET_WM_STRUT_PARTIAL", false),
-      gdk_atom_intern("CARDINAL", false), 32, GDK_PROP_MODE_REPLACE,
-      (const guchar *)&struts_partial, 12);
+  gdk_property_change(gdk_window,
+                      gdk_atom_intern("_NET_WM_STRUT_PARTIAL", false),
+                      gdk_atom_intern("CARDINAL", false), 32,
+                      GDK_PROP_MODE_REPLACE, (const guchar *)&struts, 12);
 }
 
 int main(int argc, char **argv) {
