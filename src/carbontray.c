@@ -11,6 +11,18 @@ typedef struct {
   char *bar_position;
 } Config;
 
+typedef struct {
+  long left, right, top, bottom, left_start_y, left_end_y, right_start_y,
+      right_end_y, top_start_x, top_end_x, bottom_start_x, bottom_end_x;
+} Struts;
+
+Struts *struts_new() {
+  long struts[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  return g_memdup(&struts, 12 * sizeof(long));
+}
+
+void struts_destory(Struts *struts) { g_free(struts); }
+
 Config *config_default_new() {
   Config *config = g_malloc(sizeof(Config));
 
@@ -80,18 +92,21 @@ void setup_struts(GtkWidget *win, Config *config, int scale_factor) {
 
   g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
-  long struts[] = {
-      0, 0, config->bar_height * scale_factor,       0,        0, 0,
-      0, 0, 3840 - config->bar_width * scale_factor, 3840 - 1, 0, 0};
+  Struts *struts = struts_new();
+
+  struts->top = config->bar_height * scale_factor;
+  struts->top_start_x = 3840 - config->bar_width * scale_factor;
+  struts->top_end_x = 3840 - 1;
 
   gdk_property_change(gdk_window, gdk_atom_intern("_NET_WM_STRUT", false),
                       gdk_atom_intern("CARDINAL", false), 32,
-                      GDK_PROP_MODE_REPLACE, (const guchar *)&struts, 4);
+                      GDK_PROP_MODE_REPLACE, (const guchar *)struts, 4);
 
   gdk_property_change(gdk_window,
                       gdk_atom_intern("_NET_WM_STRUT_PARTIAL", false),
                       gdk_atom_intern("CARDINAL", false), 32,
-                      GDK_PROP_MODE_REPLACE, (const guchar *)&struts, 12);
+                      GDK_PROP_MODE_REPLACE, (const guchar *)struts, 12);
+  struts_destory(struts);
 }
 
 int main(int argc, char **argv) {
