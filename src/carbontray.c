@@ -149,7 +149,8 @@ int main(int argc, char **argv) {
       {"icon-spacing", 's', 0, G_OPTION_ARG_INT, &config->bar_icon_spacing,
        "Bar icon spacing", "s"},
       {"position", 'p', 0, G_OPTION_ARG_STRING, &position,
-       "Bar position"
+       "Bar position, one of top-left, top-right, bottom-left, bottom-right; "
+       "defaults to top-right",
        "p"},
       {NULL}};
 
