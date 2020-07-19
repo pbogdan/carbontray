@@ -97,7 +97,8 @@ void setup_struts(GtkWidget *win, Config *config) {
   g_message("X11 window id: 0x%" PRIx64 "", GDK_WINDOW_XID(gdk_window));
 
   if (config->bar_position == TopRight || config->bar_position == BottomRight) {
-    strut_start = 3840 - config->bar_width * config->scale_factor;
+    strut_start =
+        (config->screen_width - config->bar_width) * config->scale_factor;
   }
 
   if (config->bar_position == TopLeft || config->bar_position == BottomLeft) {
