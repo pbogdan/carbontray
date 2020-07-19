@@ -8,7 +8,7 @@ typedef struct {
   int bar_height;
   int bar_icon_size;
   int bar_icon_spacing;
-  guchar *bar_position;
+  char *bar_position;
 } Config;
 
 Config *config_default_new() {
@@ -18,7 +18,7 @@ Config *config_default_new() {
   config->bar_height = 25;
   config->bar_icon_size = 16;
   config->bar_icon_spacing = 4;
-  config->bar_position = (guchar *)"top-right";
+  config->bar_position = "top-right";
 
   return config;
 }
@@ -26,6 +26,33 @@ Config *config_default_new() {
 void config_destroy(Config *config) {
   g_free(config->bar_position);
   g_free(config);
+}
+
+GdkPoint *get_coordinates(GtkWidget *win, Config *config) {
+  GdkPoint *point = g_malloc(sizeof(GdkPoint));
+
+  GdkRectangle *geometry = g_malloc(sizeof(GdkRectangle));
+  gdk_monitor_get_geometry(
+      gdk_display_get_primary_monitor(
+          gdk_screen_get_display(gtk_window_get_screen((GTK_WINDOW(win))))),
+      geometry);
+  if (g_strcmp0(config->bar_position, "top-left") == 0) {
+    point->x = 0;
+    point->y = 0;
+  } else if (g_strcmp0(config->bar_position, "bottom-left") == 0) {
+    point->x = 0;
+    point->y = geometry->height - config->bar_height;
+  } else if (g_strcmp0(config->bar_position, "bottom-right") == 0) {
+    point->x = geometry->width - config->bar_width;
+    point->y = geometry->height - config->bar_height;
+  } else { // fall back to default "top-right"
+    point->x = geometry->width - config->bar_width;
+    point->y = 0;
+  }
+
+  g_free(geometry);
+
+  return point;
 }
 
 void load_user_stylesheet(GdkScreen *screen) {
@@ -109,13 +136,6 @@ int main(int argc, char **argv) {
 
   screen = gtk_widget_get_screen(win);
 
-  GdkRectangle *geometry = g_malloc(sizeof(GdkRectangle));
-  gdk_monitor_get_geometry(
-      gdk_display_get_primary_monitor(gdk_screen_get_display(screen)),
-      geometry);
-  int screen_width = geometry->width;
-  g_free(geometry);
-
   int scale_factor = gdk_monitor_get_scale_factor(
       gdk_display_get_primary_monitor(gdk_screen_get_display(screen)));
   g_message("GTK scale factor: %d", scale_factor);
@@ -155,7 +175,11 @@ int main(int argc, char **argv) {
   gtk_widget_set_size_request(GTK_WIDGET(win), config->bar_width,
                               config->bar_height);
 
-  gtk_window_move(GTK_WINDOW(win), screen_width - config->bar_width, 0);
+  GdkPoint *coordinates = get_coordinates(win, config);
+
+  gtk_window_move(GTK_WINDOW(win), coordinates->x, coordinates->y);
+
+  g_free(coordinates);
 
   setup_struts(win, config, scale_factor);
 
