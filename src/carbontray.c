@@ -8,6 +8,7 @@ typedef struct {
   int bar_height;
   int bar_icon_size;
   int bar_icon_spacing;
+  guchar *bar_position;
 } Config;
 
 Config *config_default_new() {
@@ -17,8 +18,14 @@ Config *config_default_new() {
   config->bar_height = 25;
   config->bar_icon_size = 16;
   config->bar_icon_spacing = 4;
+  config->bar_position = (guchar *)"top-right";
 
   return config;
+}
+
+void config_destroy(Config *config) {
+  g_free(config->bar_position);
+  g_free(config);
 }
 
 void load_user_stylesheet(GdkScreen *screen) {
@@ -75,6 +82,9 @@ int main(int argc, char **argv) {
        "Bar icon size", "i"},
       {"icon-spacing", 's', 0, G_OPTION_ARG_INT, &config->bar_icon_spacing,
        "Bar icon spacing", "s"},
+      {"position", 'p', 0, G_OPTION_ARG_STRING, &config->bar_position,
+       "Bar position"
+       "p"},
       {NULL}};
 
   GError *error = NULL;
@@ -149,7 +159,7 @@ int main(int argc, char **argv) {
 
   setup_struts(win, config, scale_factor);
 
-  g_free(config);
+  config_destroy(config);
 
   gtk_main();
 }
