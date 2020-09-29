@@ -1,0 +1,94 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1601282935,
+        "narHash": "sha256-WQAFV6sGGQxrRs3a+/Yj9xUYvhTpukQJIcMbIi7LCJ4=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "588973065fce51f4763287f0fda87a174d78bf48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1601282935,
+        "narHash": "sha256-WQAFV6sGGQxrRs3a+/Yj9xUYvhTpukQJIcMbIi7LCJ4=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "588973065fce51f4763287f0fda87a174d78bf48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "libcarbontray": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1601404189,
+        "narHash": "sha256-Ln0PpqJdzseCFrxPEv+9UsbHAc59cTK2s8OaF3qz5cM=",
+        "owner": "pbogdan",
+        "repo": "libcarbontray",
+        "rev": "46c13ff94a0a16e2cc3f6c899a5457319817a501",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pbogdan",
+        "repo": "libcarbontray",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1601009131,
+        "narHash": "sha256-XyIURii5iWzOrEsvtbiP7b0diJV3Dn7bUwXdHyHl6hU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5aba0fe9766a7201a336249fd6cb76e0d7ba2faf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1601009131,
+        "narHash": "sha256-XyIURii5iWzOrEsvtbiP7b0diJV3Dn7bUwXdHyHl6hU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5aba0fe9766a7201a336249fd6cb76e0d7ba2faf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "libcarbontray": "libcarbontray",
+        "nixpkgs": "nixpkgs_2"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
