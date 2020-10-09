@@ -36,11 +36,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1601547206,
-        "narHash": "sha256-ZrQlA5iIzPYJdTr26mPiI1HBKthpApYT5booL8vFIbg=",
+        "lastModified": 1602160759,
+        "narHash": "sha256-ERg8vQ/Ltgzy6ICj+NZDnw2IeZJSVCh6EcQKdJQZLyo=",
         "owner": "pbogdan",
         "repo": "libcarbontray",
-        "rev": "a581fa589804eb29f195975c088cac4a378fafaf",
+        "rev": "0f96fddd42f25be187807919029e4e922307a65a",
         "type": "github"
       },
       "original": {
@@ -67,11 +67,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1601171649,
-        "narHash": "sha256-G3RUAi2DUq6r3ntASLS+LZC/Eamot55W1+xmBOgEh3M=",
+        "lastModified": 1602066138,
+        "narHash": "sha256-aV0PWKhVYQNLQuFW2qfBXa3JWmPPKSHFJ65ac83JMzE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "84d74ae9c9cbed73274b8e4e00be14688ffc93fe",
+        "rev": "420f89ceb267b461eed5d025b6c3c0e57703cc5c",
         "type": "github"
       },
       "original": {
