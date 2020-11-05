@@ -13,7 +13,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
     - name: Enable nix-command feature
       run: echo "experimental-features = nix-command" | sudo tee -a /etc/nix/nix.conf
-    - uses: cachix/cachix-action@v6
+    - uses: cachix/cachix-action@v7
       with:
         name: pbogdan
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
