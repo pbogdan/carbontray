@@ -36,11 +36,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1636713957,
-        "narHash": "sha256-FVeDH2BbIIxnakY8K1zC3vVJHj4PTcoTLwk8fO1DAc0=",
+        "lastModified": 1636827676,
+        "narHash": "sha256-PnwbaoS1zNO3FQrIYDYDwJAA3AgAQpWlPMoRuhSrhak=",
         "owner": "pbogdan",
         "repo": "libcarbontray",
-        "rev": "45d27f525b5b795840554e45494f8246659337bd",
+        "rev": "70dad5352440cb67114c005af8927d1a42c479b2",
         "type": "github"
       },
       "original": {
