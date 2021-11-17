@@ -8,6 +8,7 @@
 
     libcarbontray = {
       url = "github:pbogdan/libcarbontray";
+      inputs.nixpkgs.follows = "/nixpkgs";
     };
 
     nixpkgs = {
