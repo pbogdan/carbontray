@@ -38,11 +38,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1640537061,
-        "narHash": "sha256-iehAzro4ommB1Hd9JccUoQtKLArQCsHGFK8uYjMq3uw=",
+        "lastModified": 1641297814,
+        "narHash": "sha256-G+h9S5SVKKxWs+5u7+LwdagGmh62JDm8n78GSgEJFI8=",
         "owner": "pbogdan",
         "repo": "libcarbontray",
-        "rev": "8d564233568d0d3e358049b81d2b97970a167a38",
+        "rev": "443455db60914d7013d4934501253d270d6c9bc0",
         "type": "github"
       },
       "original": {
