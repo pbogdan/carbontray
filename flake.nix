@@ -12,7 +12,7 @@
   };
 
   outputs = { self, flake-utils, nixpkgs }:
-    flake-utils.lib.eachDefaultSystem (system:
+    (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
@@ -22,6 +22,10 @@
           default = self.packages.${system}.carbontray;
         };
           
+      }) // {
+        overlays.default = final: prev: { 
+          carbontray = final.callPackage ./carbontray.nix { };
+        };
       }
     );
 }
