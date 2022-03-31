@@ -6,29 +6,22 @@
       url = "github:numtide/flake-utils";
     };
 
-    libcarbontray = {
-      url = "github:pbogdan/libcarbontray";
-      inputs.nixpkgs.follows = "/nixpkgs";
-    };
-
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
   };
 
-  outputs = { self, flake-utils, libcarbontray, nixpkgs }:
+  outputs = { self, flake-utils, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
         packages = {
-          carbontray = pkgs.callPackage ./carbontray.nix {
-            libcarbontray = libcarbontray.packages.${system}.libcarbontray;
-          };
+          carbontray = pkgs.callPackage ./carbontray.nix { };
+          default = self.packages.${system}.carbontray;
         };
-
-        defaultPackage = self.packages.${system}.carbontray;
+          
       }
     );
 }

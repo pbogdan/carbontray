@@ -1,4 +1,4 @@
-#include <carbontray/tray.h>
+#include "tray.h"
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <inttypes.h>

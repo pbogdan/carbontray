@@ -1,17 +1,15 @@
 { stdenv
 , lib
-, pkgs
 , meson
 , ninja
 , nix-gitignore
 , pkg-config
-, glib
 , gtk3
 , xorg
 }:
 stdenv.mkDerivation {
-  pname = "carbontray";
-  version = "2020-07-11";
+  pname = "libcarbontray";
+  version = "2021-09-20";
 
   src = nix-gitignore.gitignoreSource [] ./.;
 
@@ -22,8 +20,8 @@ stdenv.mkDerivation {
   ];
 
   buildInputs = [
-    glib
     gtk3
     xorg.libX11
+    xorg.libXcomposite
   ];
 }

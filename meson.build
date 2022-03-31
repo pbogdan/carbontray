@@ -5,4 +5,5 @@ project(
   , license : 'GPL'
 )
 
+subdir('lib')
 subdir('src')
