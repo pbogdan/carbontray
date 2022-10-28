@@ -12,7 +12,7 @@ jobs:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
           experimental-features = nix-command flakes
-    - uses: cachix/cachix-action@v10
+    - uses: cachix/cachix-action@v12
       with:
         name: pbogdan
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
